@@ -1,5 +1,7 @@
 function love.load()
+    love.graphics.setDefaultFilter('nearest','nearest')
     sWidth,sHeight = love.graphics.getDimensions()
+    tlo = love.graphics.newImage('graphics/tlo.png')
     kwadrat = {}
     kwadrat.img = love.graphics.newImage('graphics/kwadrat.png')
     kwadrat.w = kwadrat.img:getWidth()
@@ -27,9 +29,8 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.setBackgroundColor(1,1,1)
+    draw_background()
     print(mx > kwadrat.x and mx < kwadrat.x + kwadrat.w and my > kwadrat.y and my < kwadrat.y + kwadrat.h)
-    love.graphics.setColor(1,1,1)
     for i=1,4 do
         if i < 3 then
             love.graphics.draw(kolory[i],sWidth/20,sHeight/2-kolory[i]:getHeight()*i)
@@ -94,4 +95,10 @@ function check_mouse()
         end
         podniesiony = 0
     end
+end
+function draw_background()
+    love.graphics.setColor(1,1,1)
+    local sx = sWidth/tlo:getWidth()
+    local sy = sHeight/tlo:getHeight()
+    love.graphics.draw(tlo,0,0,nil,sx,sy)
 end
