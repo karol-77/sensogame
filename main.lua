@@ -23,32 +23,7 @@ function love.update(dt)
     if podniesiony>0 then
         opuszczony = true
     end
-    if love.mouse.isDown(1) then
-        if mx < sWidth/20 + kolory[1]:getWidth() and mx > sWidth/20 then
-            if my > sHeight/2-kolory[1]:getHeight()*2 and my < sHeight/2-kolory[1]:getHeight()*1 then
-                podniesiony = 1
-            elseif my > sHeight/2-kolory[1]:getHeight()*1 and my < sHeight/2 then
-                podniesiony = 2
-            elseif my > sHeight/2 and my < sHeight/2+kolory[1]:getHeight()*1 then
-                podniesiony = 3
-            elseif my > sHeight/2+kolory[1]:getHeight()*1 and my < sHeight/2+kolory[1]:getHeight()*2 then
-                podniesiony = 4
-            end
-            color = podniesiony
-        end
-    else
-        if color > 0 then
-            if opuszczony == true then
-                if mx > kwadrat.x and mx < kwadrat.x + kwadrat.w and my > kwadrat.y and my < kwadrat.y + kwadrat.h then  
-                    set_color()
-                    kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a = love.graphics.getColor()  
-                    kwadrat.fill = true
-                end
-                opuszczony = false
-            end 
-        end
-        podniesiony = 0
-    end
+    check_mouse()
 end
 
 function love.draw()
@@ -85,10 +60,38 @@ function set_color()
     if color == 1 then
         love.graphics.setColor(95/255,205/255,228/255)
     elseif color == 2 then
-        love.graphics.setColor(271/255,87/255,99/255)
+        love.graphics.setColor(220/255,54/255,69/255)
     elseif color == 3 then
         love.graphics.setColor(153/255,229/255,80/255)
     elseif color == 4 then
         love.graphics.setColor(251/255,242/255,54/255)
+    end
+end
+function check_mouse()
+    if love.mouse.isDown(1) then
+        if mx < sWidth/20 + kolory[1]:getWidth() and mx > sWidth/20 then
+            if my > sHeight/2-kolory[1]:getHeight()*2 and my < sHeight/2-kolory[1]:getHeight()*1 then
+                podniesiony = 1
+            elseif my > sHeight/2-kolory[1]:getHeight()*1 and my < sHeight/2 then
+                podniesiony = 2
+            elseif my > sHeight/2 and my < sHeight/2+kolory[1]:getHeight()*1 then
+                podniesiony = 3
+            elseif my > sHeight/2+kolory[1]:getHeight()*1 and my < sHeight/2+kolory[1]:getHeight()*2 then
+                podniesiony = 4
+            end
+            color = podniesiony
+        end
+    else
+        if color > 0 then
+            if opuszczony == true then
+                if mx > kwadrat.x and mx < kwadrat.x + kwadrat.w and my > kwadrat.y and my < kwadrat.y + kwadrat.h then  
+                    set_color()
+                    kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a = love.graphics.getColor()  
+                    kwadrat.fill = true
+                end
+                opuszczony = false
+            end 
+        end
+        podniesiony = 0
     end
 end
