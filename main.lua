@@ -1,3 +1,4 @@
+
 function love.load()
     love.graphics.setDefaultFilter('nearest','nearest')
     sWidth,sHeight = love.graphics.getDimensions()
@@ -20,6 +21,39 @@ function love.load()
     opuszczony = false
 end
 
+function fill4Pixel(x,y,imgData, nR, nG, nB, leftOrRight)
+    if x > imgData:getWidth() or x < 0 then
+        return
+    end
+    if y > imgData:getHeight() or y < 0 then
+        return
+    end
+    local r, g, b, a = kwadrat.imageData:getPixel(x, y)
+    
+    -- dotarlismy do granicy
+    if r == 0 and g == 0 and b == 0 and a == 1 then
+        return
+    end
+    -- gdy dotarlismy do obszaru juz wypelnionego
+    if math.abs(r -nR) < 0.001 and math.abs(g - nG) < 0.001 and math.abs(b - nB) < 0.001 then
+        return
+    end 
+
+    -- if a == 1 then
+    --     return
+    -- end
+    
+    kwadrat.imageData:setPixel(x, y, nR, nG, nB, 1)
+    if leftOrRight == true then
+        fill4Pixel(x+1, y, imgData, nR, nG, nB, leftOrRight)
+    else
+        fill4Pixel(x-1, y, imgData, nR, nG, nB, leftOrRight)
+    end
+    
+    fill4Pixel(x, y+1, imgData, nR, nG, nB, leftOrRight)
+    fill4Pixel(x, y-1, imgData, nR, nG, nB, leftOrRight)
+
+end
 function love.update(dt)
     sWidth,sHeight = love.graphics.getDimensions()
     mx,my = love.mouse.getPosition()
@@ -46,39 +80,42 @@ function love.update(dt)
         local x = mx - kwadrat.x
         local y = my - kwadrat.y
         local stop_repeating = false
+        fill4Pixel(x,y,kwadrat.imageData, kwadrat.color.r, kwadrat.color.g, kwadrat.color.b, true)
+        fill4Pixel(x-1,y,kwadrat.imageData, kwadrat.color.r, kwadrat.color.g, kwadrat.color.b, false)
+        
         -- w lewo
-        repeat
-            local r, g, b, a = kwadrat.imageData:getPixel(x, my-kwadrat.y)
-            if a == 1 then
-                print(x,r,g,b,a)
-                stop_repeating = true
-            else
-                kwadrat.imageData:setPixel(x, my-kwadrat.y,kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a)
-            end
-            x = x - 1
-            if x < 0 or x > kwadrat.w - 1 then
-                stop_repeating = true
-            end
-        until stop_repeating == true
-        -- w prawo
-        stop_repeating = false
-        x = mx - kwadrat.x + 1
-        y = my - kwadrat.y
-        repeat
-            local r, g, b, a = kwadrat.imageData:getPixel(x, my-kwadrat.y)
-            if a == 1 then
-                print(x,r,g,b,a)
-                stop_repeating = true
-            else
-                kwadrat.imageData:setPixel(x, my-kwadrat.y,kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a)
-            end
-            x = x + 1
-            if x < 0 or x > kwadrat.w - 1 then
-                stop_repeating = true
-            end
+        -- repeat
+        --     local r, g, b, a = kwadrat.imageData:getPixel(x, my-kwadrat.y)
+        --     if a == 1 then
+        --         print(x,r,g,b,a)
+        --         stop_repeating = true
+        --     else
+        --         kwadrat.imageData:setPixel(x, my-kwadrat.y,kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a)
+        --     end
+        --     x = x - 1
+        --     if x < 0 or x > kwadrat.w - 1 then
+        --         stop_repeating = true
+        --     end
+        -- until stop_repeating == true
+        -- -- w prawo
+        -- stop_repeating = false
+        -- x = mx - kwadrat.x + 1
+        -- y = my - kwadrat.y
+        -- repeat
+        --     local r, g, b, a = kwadrat.imageData:getPixel(x, my-kwadrat.y)
+        --     if a == 1 then
+        --         print(x,r,g,b,a)
+        --         stop_repeating = true
+        --     else
+        --         kwadrat.imageData:setPixel(x, my-kwadrat.y,kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a)
+        --     end
+        --     x = x + 1
+        --     if x < 0 or x > kwadrat.w - 1 then
+        --         stop_repeating = true
+        --     end
             
             
-        until stop_repeating == true
+        -- until stop_repeating == true
         
         kwadrat.fill = false
     end
