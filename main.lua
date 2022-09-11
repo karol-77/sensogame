@@ -3,7 +3,8 @@ function love.load()
     sWidth,sHeight = love.graphics.getDimensions()
     tlo = love.graphics.newImage('graphics/tlo.png')
     kwadrat = {}
-    kwadrat.img = love.graphics.newImage('graphics/kwadrat.png')
+    kwadrat.imageData = love.image.newImageData('graphics/wzortest.png')
+    kwadrat.img = love.graphics.newImage(kwadrat.imageData)
     kwadrat.w = kwadrat.img:getWidth()
     kwadrat.h = kwadrat.img:getHeight()
     kwadrat.x = sWidth/2-kwadrat.w/2
@@ -26,11 +27,66 @@ function love.update(dt)
         opuszczony = true
     end
     check_mouse()
+    if kwadrat.fill == true then
+        love.graphics.setColor(1,1,1,1)
+        set_color()
+        kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a = love.graphics.getColor()
+        --love.graphics.rectangle('fill',kwadrat.x,kwadrat.y,kwadrat.w,kwadrat.h)
+        -- w prawo
+        --for i=0,kwadrat.w-1 do
+        --    local r, g, b, a = kwadrat.imageData:getPixel(i, my-kwadrat.y)
+        --    if a == 1 then
+        --        print(i,r,g,b,a)
+        --    else
+        --        kwadrat.imageData:setPixel(i, my-kwadrat.y,kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a)
+        --    end
+        
+        --end
+        -- w lewo
+        local x = mx - kwadrat.x
+        local y = my - kwadrat.y
+        local stop_repeating = false
+        -- w lewo
+        repeat
+            local r, g, b, a = kwadrat.imageData:getPixel(x, my-kwadrat.y)
+            if a == 1 then
+                print(x,r,g,b,a)
+                stop_repeating = true
+            else
+                kwadrat.imageData:setPixel(x, my-kwadrat.y,kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a)
+            end
+            x = x - 1
+            if x < 0 or x > kwadrat.w - 1 then
+                stop_repeating = true
+            end
+        until stop_repeating == true
+        -- w prawo
+        stop_repeating = false
+        x = mx - kwadrat.x + 1
+        y = my - kwadrat.y
+        repeat
+            local r, g, b, a = kwadrat.imageData:getPixel(x, my-kwadrat.y)
+            if a == 1 then
+                print(x,r,g,b,a)
+                stop_repeating = true
+            else
+                kwadrat.imageData:setPixel(x, my-kwadrat.y,kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a)
+            end
+            x = x + 1
+            if x < 0 or x > kwadrat.w - 1 then
+                stop_repeating = true
+            end
+            
+            
+        until stop_repeating == true
+        
+        kwadrat.fill = false
+    end
+    kwadrat.img = love.graphics.newImage(kwadrat.imageData)
 end
 
 function love.draw()
     draw_background()
-    print(mx > kwadrat.x and mx < kwadrat.x + kwadrat.w and my > kwadrat.y and my < kwadrat.y + kwadrat.h)
     for i=1,4 do
         if i < 3 then
             love.graphics.draw(kolory[i],sWidth/20,sHeight/2-kolory[i]:getHeight()*i)
@@ -39,12 +95,8 @@ function love.draw()
             love.graphics.draw(kolory[i],sWidth/20,sHeight/2+kolory[i]:getHeight()*(i-3))
         end
     end
-    if kwadrat.fill == true then
-        love.graphics.setColor(kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a)
-        love.graphics.rectangle('fill',kwadrat.x,kwadrat.y,kwadrat.w,kwadrat.h)
-       
-    end
-    love.graphics.setColor(0,0,0)
+
+    
     love.graphics.draw(kwadrat.img,kwadrat.x,kwadrat.y)
     set_color()
     if podniesiony > 0 then
@@ -55,6 +107,9 @@ end
 function love.keypressed(k)
     if k == 'escape' then
         love.event.quit()
+    end
+    if k == 'delete' then
+        kwadrat.color.r,kwadrat.color.g,kwadrat.color.b,kwadrat.color.a = 0,0,0,0 
     end
 end
 function set_color()
