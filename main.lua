@@ -21,11 +21,51 @@ function love.load()
     opuszczony = false
 end
 
-function fill4Pixel(x,y,imgData, nR, nG, nB, leftOrRight)
-    if x > imgData:getWidth() or x < 0 then
+function isNodeInside(x,y, nR, nG, nB) 
+    if x > kwadrat.imageData:getWidth() or x < 0 then
+        return false
+    end
+    if y > kwadrat.imageData:getHeight() or y < 0 then
+        return false
+    end
+    local r, g, b, a = kwadrat.imageData:getPixel(x, y)
+    
+    -- dotarlismy do granicy
+    if r == 0 and g == 0 and b == 0 and a == 1 then
+        return false
+    end
+    -- gdy dotarlismy do obszaru juz wypelnionego
+    if math.abs(r -nR) < 0.001 and math.abs(g - nG) < 0.001 and math.abs(b - nB) < 0.001 then
+        return false
+    end 
+    return true
+end
+function fill4PixelList(x,y, nR, nG, nB) 
+    local nodes = {}
+    local node = {x, y}
+    table.insert(nodes, node)
+    repeat 
+        node = table.remove(nodes)
+        x = node[1]
+        y = node[2]
+        --print(x, y)
+        if isNodeInside(x, y, nR, nG, nB) then
+            --print("isInside")
+            kwadrat.imageData:setPixel(x, y, nR, nG, nB, 1)
+            table.insert(nodes, {x+1,y})
+            table.insert(nodes, {x-1,y})
+            table.insert(nodes, {x,y+1})
+            table.insert(nodes, {x,y-1})
+            --print(table.getn)
+        end
+    until table.getn(nodes) == 0
+end
+
+function fill4Pixel(x,y, nR, nG, nB, kierunek)
+    if x > kwadrat.imageData:getWidth() or x < 0 then
         return
     end
-    if y > imgData:getHeight() or y < 0 then
+    if y > kwadrat.imageData:getHeight() or y < 0 then
         return
     end
     local r, g, b, a = kwadrat.imageData:getPixel(x, y)
@@ -44,14 +84,22 @@ function fill4Pixel(x,y,imgData, nR, nG, nB, leftOrRight)
     -- end
     
     kwadrat.imageData:setPixel(x, y, nR, nG, nB, 1)
-    if leftOrRight == true then
-        fill4Pixel(x+1, y, imgData, nR, nG, nB, leftOrRight)
-    else
-        fill4Pixel(x-1, y, imgData, nR, nG, nB, leftOrRight)
+    if kierunek ~= 1 then
+        fill4Pixel(x+1, y, nR, nG, nB, 2) 
     end
+        --else
+    if kierunek ~= 2 then 
+        fill4Pixel(x-1, y, nR, nG, nB, 1)
+    end
+    --end
     
-    fill4Pixel(x, y+1, imgData, nR, nG, nB, leftOrRight)
-    fill4Pixel(x, y-1, imgData, nR, nG, nB, leftOrRight)
+    if kierunek ~= 4 then
+        fill4Pixel(x, y+1, nR, nG, nB, 3)
+    end
+
+    if kierunek ~= 3 then
+        fill4Pixel(x, y-1, nR, nG, nB, 4)
+    end
 
 end
 function love.update(dt)
@@ -80,8 +128,8 @@ function love.update(dt)
         local x = mx - kwadrat.x
         local y = my - kwadrat.y
         local stop_repeating = false
-        fill4Pixel(x,y,kwadrat.imageData, kwadrat.color.r, kwadrat.color.g, kwadrat.color.b, true)
-        fill4Pixel(x-1,y,kwadrat.imageData, kwadrat.color.r, kwadrat.color.g, kwadrat.color.b, false)
+        fill4PixelList(x,y, kwadrat.color.r, kwadrat.color.g, kwadrat.color.b)
+        --fill4Pixel(x-1,y,kwadrat.imageData, kwadrat.color.r, kwadrat.color.g, kwadrat.color.b, false)
         
         -- w lewo
         -- repeat
